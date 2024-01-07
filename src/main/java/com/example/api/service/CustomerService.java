@@ -1,23 +1,18 @@
 package com.example.api.service;
 
+import com.example.api.domain.Customer;
+import com.example.api.repository.CustomerRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.example.api.domain.Customer;
-import com.example.api.repository.CustomerRepository;
-
+@RequiredArgsConstructor
 @Service
 public class CustomerService {
 
-	private CustomerRepository repository;
-
-	@Autowired
-	public CustomerService(CustomerRepository repository) {
-		this.repository = repository;
-	}
+	private final CustomerRepository repository;
 
 	public List<Customer> findAll() {
 		return repository.findAllByOrderByNameAsc();

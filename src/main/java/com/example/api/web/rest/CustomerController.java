@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,17 +21,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/customers")
 @Tag(name = "CUSTOMER", description = "Endpoint especifico para operações do customer")
 public class CustomerController {
 
-	private CustomerService service;
-
-	@Autowired
-	public CustomerController(CustomerService service) {
-		this.service = service;
-	}
+	private final CustomerService service;
 
 	@Operation(summary = "Rota para buscar todos os customers")
 	@ApiResponses(value = {
@@ -49,6 +48,9 @@ public class CustomerController {
 			@ApiResponse(responseCode = "404", description = "customer não encontrado", content = @Content) })
 	@GetMapping("/{id}")
 	public Customer findById(@Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) {
+
+		log.info("Buscando customer com o id {}", id);
+
 		return service.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
 	}
