@@ -16,6 +16,7 @@
     <properties>
         <java.version>11</java.version>
         <spring.admin.version>2.6.1</spring.admin.version>
+        <springdoc.version>1.7.0</springdoc.version>
     </properties>
     <dependencies>
         <dependency>
@@ -50,6 +51,12 @@
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
             <version>${spring.admin.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
     </dependencies>
