@@ -33,6 +33,7 @@ public class SwaggerConfigurationTest {
     void shouldRedirectToSwaggerUiPage() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get(CUSTOM_URL)).andExpect(status().is3xxRedirection()).andReturn();
         String contentAsString = mvcResult.getResponse().getRedirectedUrl();
+        assert contentAsString != null;
         Assertions.assertTrue(contentAsString.contains(DEFAULT_URL));
     }
 
