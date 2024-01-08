@@ -26,7 +26,7 @@ public class ApiExceptionHandler<T> {
 	 */
 	@ExceptionHandler(value = { CustomerNotFoundException.class })
     protected ResponseEntity<SeguroUnimedResponse<T>> handleCustomerNotFoundException(CustomerNotFoundException exception) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createResponse(exception.getLocalizedMessage()));
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.getResponse(exception.getLocalizedMessage()));
     }
 
 	/**
@@ -40,7 +40,7 @@ public class ApiExceptionHandler<T> {
 	 */
 	@ExceptionHandler(value = { ServerErrorException.class })
     protected ResponseEntity<SeguroUnimedResponse<T>> handleServerException(ServerErrorException exception) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this.createResponse(exception.getLocalizedMessage()));
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(this.getResponse(exception.getLocalizedMessage()));
     }
 
 	/**
@@ -54,7 +54,7 @@ public class ApiExceptionHandler<T> {
 	 */
 	@ExceptionHandler(value = { HttpClientErrorException.BadRequest.class })
 	protected ResponseEntity<SeguroUnimedResponse<T>> handleBadRequestException(HttpClientErrorException.BadRequest exception) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.createResponse(exception.getLocalizedMessage()));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.getResponse(exception.getLocalizedMessage()));
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class ApiExceptionHandler<T> {
 	 * @param exceptionMessage the exception message
 	 * @return a {@link SeguroUnimedResponse} with the exception message
 	 */
-	private SeguroUnimedResponse<T> createResponse(String exceptionMessage) {
+	private SeguroUnimedResponse<T> getResponse(String exceptionMessage) {
 		SeguroUnimedResponse<T> response = new SeguroUnimedResponse<>();
 		response.addErrorMsgToResponse(exceptionMessage);
 		return response;

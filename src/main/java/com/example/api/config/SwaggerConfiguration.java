@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile;
 /**
  * Swagger configuration class
  *  
- * @author René Araújo Vasconcelos
+ * @author René Araújo Vasconcelos - 1/8/2024 - 11:05 AM
  */
 @Configuration
 @Profile({"dev"})
