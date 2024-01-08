@@ -1,6 +1,9 @@
 package com.example.api.web.rest;
 
 import com.example.api.domain.Customer;
+import com.example.api.dto.CustomerDTO;
+import com.example.api.dto.response.SeguroUnimedResponse;
+import com.example.api.exception.CustomerNotFoundException;
 import com.example.api.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,13 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,16 +42,19 @@ public class CustomerController {
 	@Operation(summary = "Rota para buscar um customer por id")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "customer encontrado", content = {
-					@Content(mediaType = "application/json", schema = @Schema(implementation = Customer.class))}),
+					@Content(mediaType = "application/json", schema = @Schema(implementation = CustomerDTO.class))}),
 			@ApiResponse(responseCode = "400", description = "id inválido", content = @Content),
 			@ApiResponse(responseCode = "404", description = "customer não encontrado", content = @Content) })
 	@GetMapping("/{id}")
-	public Customer findById(@Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) {
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<SeguroUnimedResponse<CustomerDTO>> findById(@Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) throws CustomerNotFoundException {
 
-		log.info("Buscando customer com o id {}", id);
+		SeguroUnimedResponse<CustomerDTO> response = new SeguroUnimedResponse<>();
+		Customer customer = service.findById(id);
 
-		return service.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+		CustomerDTO dto = customer.convertToDTO();
+		response.setData(dto);
+
+		return ResponseEntity.ok().body(response);
 	}
-
 }
