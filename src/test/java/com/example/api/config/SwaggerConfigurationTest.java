@@ -15,8 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class SwaggerConfigurationTest {
 
-    public static final String INDEX_HTML = "/swagger-ui/index.html";
-    public static final String URL_BASE = "/swagger";
+    public static final String DEFAULT_URL = "/swagger-ui/index.html";
+    public static final String CUSTOM_URL = "/swagger";
     public static final String PAGE_TITLE = "Swagger UI";
 
     @Autowired
@@ -24,10 +24,16 @@ public class SwaggerConfigurationTest {
 
     @Test
     void shouldDisplaySwaggerUiPage() throws Exception {
-        mockMvc.perform(get(URL_BASE)).andExpect(status().is3xxRedirection());
-        MvcResult mvcResult = mockMvc.perform(get(INDEX_HTML)).andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = mockMvc.perform(get(DEFAULT_URL)).andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
         Assertions.assertTrue(contentAsString.contains(PAGE_TITLE));
+    }
+
+    @Test
+    void shouldRedirectToSwaggerUiPage() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get(CUSTOM_URL)).andExpect(status().is3xxRedirection()).andReturn();
+        String contentAsString = mvcResult.getResponse().getRedirectedUrl();
+        Assertions.assertTrue(contentAsString.contains(DEFAULT_URL));
     }
 
 }
