@@ -1,10 +1,11 @@
-package com.example.api.web.rest;
+package com.example.api.controller;
 
 import com.example.api.domain.Customer;
 import com.example.api.dto.CustomerDTO;
 import com.example.api.dto.response.SeguroUnimedResponse;
 import com.example.api.exception.CustomerNotFoundException;
 import com.example.api.service.CustomerService;
+import com.example.api.util.MapperUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,9 +53,25 @@ public class CustomerController {
 		SeguroUnimedResponse<CustomerDTO> response = new SeguroUnimedResponse<>();
 		Customer customer = service.findById(id);
 
-		CustomerDTO dto = customer.convertToDTO();
+		CustomerDTO dto = MapperUtils.map(customer, CustomerDTO.class);
 		response.setData(dto);
 
 		return ResponseEntity.ok().body(response);
 	}
+
+	@Operation(summary = "Rota para buscar todos os customers filtrados por email")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "lista de customers", content = {
+					@Content(mediaType = "application/json", schema = @Schema(implementation =CustomerDTO.class))}),
+	})
+	@GetMapping("/filter")
+	public ResponseEntity<SeguroUnimedResponse<List<CustomerDTO>>> findAllByFilters(@Parameter(description = "email para consulta") @RequestParam(required = false) String email) {
+		SeguroUnimedResponse<List<CustomerDTO>> response = new SeguroUnimedResponse<>();
+		List<Customer> result = service.findByEmailContainsIgnoreCase(email);
+
+		response.setData(MapperUtils.mapAll(result, CustomerDTO.class));
+
+		return ResponseEntity.ok().body(response);
+	}
+
 }

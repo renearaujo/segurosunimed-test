@@ -1,8 +1,6 @@
 package com.example.api.dto;
 
-import com.example.api.domain.Customer;
 import lombok.*;
-import org.modelmapper.ModelMapper;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,16 +24,5 @@ public class CustomerDTO {
 
     @NotNull(message="O genero não pode ser nulo")
     private String gender;
-
-    /**
-     * Converts the {@link CustomerDTO} DTO to entity
-     *
-     * @author René Araújo Vasconcelos - 1/8/2024 - 2:29 PM
-     *
-     * @return the entity {@link Customer}
-     */
-    public Customer convertToEntity() {
-        return new ModelMapper().map(this, Customer.class);
-    }
 
 }

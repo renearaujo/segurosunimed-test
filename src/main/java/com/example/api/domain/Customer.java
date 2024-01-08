@@ -1,8 +1,6 @@
 package com.example.api.domain;
 
-import com.example.api.dto.CustomerDTO;
 import lombok.*;
-import org.modelmapper.ModelMapper;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -32,16 +30,5 @@ public class Customer {
 	@Column(nullable = false)
 	@NotEmpty
 	private String gender;
-
-	/**
-	 * Converts the {@link Customer} entity to DTO
-	 *
-	 * @author René Araújo Vasconcelos - 1/8/2024 - 2:28 PM
-	 *
-	 * @return the DTO {@link CustomerDTO}
-	 */
-	public CustomerDTO convertToDTO() {
-		return new ModelMapper().map(this, CustomerDTO.class);
-	}
 
 }
