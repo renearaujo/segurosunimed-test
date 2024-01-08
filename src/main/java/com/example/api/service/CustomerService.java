@@ -31,4 +31,15 @@ public class CustomerService {
 		return repository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Cliente com id=" + id +" não encontrado"));
 	}
 
+	/**
+	 * Find a {@link Customer} by email
+	 *
+	 * @author René Araújo Vasconcelos - 1/8/2024 - 7:55 PM
+	 * @param email email to be used to filter
+	 * @return a {@link List} of {@link Customer}s
+	 */
+	public List<Customer> findByEmailContainsIgnoreCase(String email) {
+		return repository.findByEmailContainsIgnoreCase(email);
+	}
+
 }
