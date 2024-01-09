@@ -34,13 +34,15 @@ public class CustomerService {
 	/**
 	 * Find a {@link Customer} by filters
 	 *
-	 * @author René Araújo Vasconcelos - 1/8/2024 - 7:55 PM
-	 * @param email email to be used to filter
-	 * @param name name to be used to find
+	 * @param email  email to be used to filter customers
+	 * @param name   name to be used to filter customers
+	 * @param gender gender to be used to filter customers
 	 * @return a {@link List} of {@link Customer}s
+	 *
+	 * @author René Araújo Vasconcelos - 1/8/2024 - 7:55 PM
 	 */
-	public List<Customer> findAllByFilters(String email, String name) {
-		return repository.findAllByFilters(email, name);
+	public List<Customer> findAllByFilters(String email, String name, String gender) {
+		return repository.findAllByFilters(email, name, gender);
 	}
 
 }

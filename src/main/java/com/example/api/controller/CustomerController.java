@@ -67,10 +67,11 @@ public class CustomerController {
 	@GetMapping("/filter")
 	public ResponseEntity<SeguroUnimedResponse<List<CustomerDTO>>> findAllByFilters(
 			@Parameter(description = "email para consulta") @RequestParam(required = false) String email,
-			@Parameter(description = "Nome para consulta") @RequestParam(required = false) String name
+			@Parameter(description = "Nome para consulta") @RequestParam(required = false) String name,
+			@Parameter(description = "Genero para consulta") @RequestParam(required = false) String gender
 	) {
 		SeguroUnimedResponse<List<CustomerDTO>> response = new SeguroUnimedResponse<>();
-		List<Customer> result = service.findAllByFilters(email, name);
+		List<Customer> result = service.findAllByFilters(email, name, gender);
 
 		response.setData(MapperUtils.mapAll(result, CustomerDTO.class));
 
