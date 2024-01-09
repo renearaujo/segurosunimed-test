@@ -58,17 +58,18 @@ class CustomerControllerTest {
     }
 
     @Test
-    void testFindByFiltersShouldOK() throws Exception
+    void testFindByFilterShouldOK() throws Exception
     {
         mockMvc.perform( MockMvcRequestBuilders
                         .get(URL+"/filter")
                         .param("email", ".com")
+                        .param("name", "joao")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void testFindByFiltersShouldOKWithoutParams() throws Exception
+    void testFindByFilterShouldOKWithoutParams() throws Exception
     {
         mockMvc.perform( MockMvcRequestBuilders
                         .get(URL+"/filter")
@@ -77,11 +78,12 @@ class CustomerControllerTest {
     }
 
     @Test
-    void testFindByFiltersShouldOKWithBlankParam() throws Exception
+    void testFindByFilterShouldOKWithBlankParam() throws Exception
     {
         mockMvc.perform( MockMvcRequestBuilders
                         .get(URL+"/filter")
                         .param("email", "")
+                        .param("name", "")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());

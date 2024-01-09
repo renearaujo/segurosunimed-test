@@ -62,12 +62,15 @@ public class CustomerController {
 	@Operation(summary = "Rota para buscar todos os customers filtrados por email")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "lista de customers", content = {
-					@Content(mediaType = "application/json", schema = @Schema(implementation =CustomerDTO.class))}),
+					@Content(mediaType = "application/json", schema = @Schema(implementation =SeguroUnimedResponse.class))}),
 	})
 	@GetMapping("/filter")
-	public ResponseEntity<SeguroUnimedResponse<List<CustomerDTO>>> findAllByFilters(@Parameter(description = "email para consulta") @RequestParam(required = false) String email) {
+	public ResponseEntity<SeguroUnimedResponse<List<CustomerDTO>>> findAllByFilters(
+			@Parameter(description = "email para consulta") @RequestParam(required = false) String email,
+			@Parameter(description = "Nome para consulta") @RequestParam(required = false) String name
+	) {
 		SeguroUnimedResponse<List<CustomerDTO>> response = new SeguroUnimedResponse<>();
-		List<Customer> result = service.findByEmailContainsIgnoreCase(email);
+		List<Customer> result = service.findAllByFilters(email, name);
 
 		response.setData(MapperUtils.mapAll(result, CustomerDTO.class));
 
