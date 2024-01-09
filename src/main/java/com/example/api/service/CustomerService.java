@@ -32,14 +32,15 @@ public class CustomerService {
 	}
 
 	/**
-	 * Find a {@link Customer} by email
+	 * Find a {@link Customer} by filters
 	 *
 	 * @author René Araújo Vasconcelos - 1/8/2024 - 7:55 PM
 	 * @param email email to be used to filter
+	 * @param name name to be used to find
 	 * @return a {@link List} of {@link Customer}s
 	 */
-	public List<Customer> findByEmailContainsIgnoreCase(String email) {
-		return repository.findByEmailContainsIgnoreCase(email);
+	public List<Customer> findAllByFilters(String email, String name) {
+		return repository.findAllByFilters(email, name);
 	}
 
 }
