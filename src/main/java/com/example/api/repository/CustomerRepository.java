@@ -14,11 +14,15 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
 
 	@Query(
 			"SELECT c FROM Customer c WHERE " +
-			"(:email IS NULL OR TRIM(UPPER(c.email)) LIKE UPPER(CONCAT('%', TRIM(:email), '%'))) AND " +
-			"(:name IS NULL OR TRIM(UPPER(c.name)) LIKE UPPER(CONCAT('%', TRIM(:name), '%'))) "
+			"(:email IS NULL OR TRIM(UPPER(c.email)) LIKE UPPER(CONCAT('%', TRIM(:email), '%'))) " +
+			"AND " +
+			"(:name IS NULL OR TRIM(UPPER(c.name)) LIKE UPPER(CONCAT('%', TRIM(:name), '%'))) " +
+			"AND " +
+			"(:gender IS NULL OR TRIM(UPPER(c.gender)) LIKE UPPER(CONCAT('%', TRIM(:gender), '%')))"
 	)
 	List<Customer> findAllByFilters(
 			@Param("email") @Nullable String email,
-			@Param("name") @Nullable String name
+			@Param("name") @Nullable String name,
+			@Param("gender") @Nullable String gender
 	);
 }

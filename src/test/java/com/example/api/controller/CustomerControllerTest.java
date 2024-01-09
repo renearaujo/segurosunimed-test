@@ -64,6 +64,7 @@ class CustomerControllerTest {
                         .get(URL+"/filter")
                         .param("email", ".com")
                         .param("name", "joao")
+                        .param("gender", "M")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -84,6 +85,7 @@ class CustomerControllerTest {
                         .get(URL+"/filter")
                         .param("email", "")
                         .param("name", "")
+                        .param("gender", "")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
