@@ -49,7 +49,7 @@ public class CustomerController {
 			@ApiResponse(responseCode = "400", description = "id inválido", content = @Content),
 			@ApiResponse(responseCode = "404", description = "customer não encontrado", content = @Content) })
 	@GetMapping("/{id}")
-	public SeguroUnimedResponse<CustomerDTO> findById(@Valid @Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) throws CustomerNotFoundException {
+	public SeguroUnimedResponse<CustomerDTO> findById(@Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) throws CustomerNotFoundException {
 
 		SeguroUnimedResponse<CustomerDTO> response = new SeguroUnimedResponse<>();
 		Customer customer = service.findById(id);
