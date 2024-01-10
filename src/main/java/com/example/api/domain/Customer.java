@@ -13,18 +13,10 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @Entity
 @Table(name = "CUSTOMER")
-@SequenceGenerator(name = Customer.SEQUENCE_NAME, sequenceName = Customer.SEQUENCE_NAME, allocationSize = 1)
 public class Customer {
 
-	/**
-	 * Name of the sequence
-	 *
-	 * @see GenerationType#SEQUENCE
-	 */
-	public static final String SEQUENCE_NAME = "CUSTOMER_SEQ";
-
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(nullable = false)
