@@ -36,8 +36,11 @@ class CustomerControllerTest {
     @Test
     void testCreate() {
 
-        List<CustomerDTO> customer = createCustomer(100);
+        List<CustomerDTO> customer = createCustomer(10);
+        createCustomer(customer);
+    }
 
+    private void createCustomer(List<CustomerDTO> customer) {
         customer.forEach(item -> {
             try {
                 mockMvc.perform(setupPost(item)).andExpect(status().isCreated())
@@ -63,6 +66,7 @@ class CustomerControllerTest {
     @Test
     void testFindByIdShouldOK() throws Exception
     {
+        createCustomer(this.createCustomer(1));
         mockMvc.perform( MockMvcRequestBuilders
                         .get(URL+"/{id}", ID)
                         .accept(MediaType.APPLICATION_JSON))
