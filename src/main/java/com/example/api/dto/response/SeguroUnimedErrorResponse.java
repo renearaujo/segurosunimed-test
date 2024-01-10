@@ -1,10 +1,11 @@
 package com.example.api.dto.response;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-
-import lombok.*;
 
 /**
  * Class that implements a generic response error
@@ -14,10 +15,8 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor
+@JsonRootName("errors")
 public class SeguroUnimedErrorResponse {
-	
-	@NotNull(message="Timestamp cannot be null")
-	private LocalDateTime timestamp;
 	
 	@NotNull(message="Details cannot be null")
     private String details;

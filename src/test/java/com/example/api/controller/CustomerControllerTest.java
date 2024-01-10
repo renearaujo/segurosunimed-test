@@ -1,12 +1,21 @@
 package com.example.api.controller;
 
+import com.example.api.dto.CustomerDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,6 +30,30 @@ class CustomerControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Test
+    void testCreate() {
+
+        List<CustomerDTO> customer = createCustomer(10);
+        createCustomer(customer);
+    }
+
+    private void createCustomer(List<CustomerDTO> customer) {
+        customer.forEach(item -> {
+            try {
+                mockMvc.perform(setupPost(item)).andExpect(status().isCreated())
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(item.getName()))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(item.getEmail()))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value(item.getGender()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+
     @Test
     void testFindAllShouldOK() throws Exception
     {
@@ -33,6 +66,7 @@ class CustomerControllerTest {
     @Test
     void testFindByIdShouldOK() throws Exception
     {
+        createCustomer(this.createCustomer(1));
         mockMvc.perform( MockMvcRequestBuilders
                         .get(URL+"/{id}", ID)
                         .accept(MediaType.APPLICATION_JSON))
@@ -87,7 +121,60 @@ class CustomerControllerTest {
                         .param("name", "")
                         .param("gender", "")
                         .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void testCreateWithoutParam() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(URL + "/")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateWithExistingEmail() throws Exception {
+        CustomerDTO customer = createCustomer(1).get(0);
+
+        String responseJson = mockMvc.perform(setupPost(customer)).andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        CustomerDTO responseDTO = objectMapper.readValue(responseJson, CustomerDTO.class);
+
+        mockMvc.perform(setupPost(customer)).andDo(print()).andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].details")
+                        .value("Email [" + customer.getEmail() + "] Already Exists for another Customer with id = [" + responseDTO.getId() + "]"));
+    }
+
+    private MockHttpServletRequestBuilder setupPost(CustomerDTO requestBody) throws JsonProcessingException {
+
+        return MockMvcRequestBuilders
+                .post(URL + "/")
+                .content(objectMapper.writeValueAsString(requestBody))
+                .contentType(MediaType.APPLICATION_JSON);
+
+    }
+
+    private List<CustomerDTO> createCustomer(int qtd) {
+        List<CustomerDTO> resultList = new ArrayList<>();
+
+        for (int i = 0; i < qtd; i++) {
+            String mail = RandomStringUtils.randomAlphabetic(10) + "@gmail.com";
+            resultList.add(CustomerDTO.builder().email(mail).name("joao").gender("M").build());
+        }
+
+        return resultList;
+    }
+
+    @Test
+    void testCreate_InvalidName_ReturnsBadRequest() throws Exception {
+        CustomerDTO customer = createCustomer(1).get(0).withName("A");
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URL + "/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].details").value("Invalid Name: Must be of 3 - 100 characters"));
+    }
+
 }

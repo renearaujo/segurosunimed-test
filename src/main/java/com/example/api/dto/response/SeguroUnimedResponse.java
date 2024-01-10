@@ -1,10 +1,11 @@
 package com.example.api.dto.response;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class that implements a generic response
@@ -20,16 +21,29 @@ import lombok.*;
 public class SeguroUnimedResponse<T> {
 
 	private T data;
-	private Object errors;
-	
+	private List<SeguroUnimedErrorResponse> errors;
+
 	/**
 	 * Method that formats an error message to the generic response.
-	 * 
+	 *
 	 * @author René Araújo Vasconcelos - 1/8/2024 - 2:33 PM
-	 * 
+	 *
 	 * @param msgError the error message
 	 */
-    public void addErrorMsgToResponse(String msgError) {
-		setErrors( new SeguroUnimedErrorResponse(LocalDateTime.now(), msgError) );
-    }
+	private void addErrorMsgToResponse(String msgError) {
+
+		if (errors == null) {
+			List<SeguroUnimedErrorResponse> list = new ArrayList<>();
+			this.setErrors(list);
+		}
+
+		errors.add(new SeguroUnimedErrorResponse(msgError));
+	}
+
+	public void addErrorMsgToResponse(String... item) {
+
+		if (item != null) {
+			Arrays.stream(item).sequential().forEach(this::addErrorMsgToResponse);
+		}
+	}
 }

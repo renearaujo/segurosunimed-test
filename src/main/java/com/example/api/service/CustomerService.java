@@ -2,12 +2,16 @@ package com.example.api.service;
 
 import com.example.api.domain.Customer;
 import com.example.api.exception.CustomerNotFoundException;
+import com.example.api.exception.EmailAlreadyExistsException;
 import com.example.api.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CustomerService {
@@ -45,4 +49,18 @@ public class CustomerService {
 		return repository.findAllByFilters(email, name, gender);
 	}
 
+	public Customer create(Customer item) {
+
+		Optional<Customer> customerResultDB = repository.findByEmailIgnoreCase(item.getEmail());
+
+		if (customerResultDB.isPresent()) {
+			throw new EmailAlreadyExistsException(customerResultDB.get().getEmail(), customerResultDB.get().getId());
+		}
+
+		Customer saved = repository.save(item);
+
+		log.info("Customer created with id = {} - email = {} ", saved.getId(), saved.getEmail());
+
+		return saved;
+	}
 }
