@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,7 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/customers")
-@Validated
 @Tag(name = "CUSTOMER", description = "Endpoint especifico para operações do customer")
 public class CustomerController {
 
@@ -65,6 +63,7 @@ public class CustomerController {
 			@ApiResponse(responseCode = "200", description = "lista de customers", content = {
 					@Content(mediaType = "application/json", schema = @Schema(implementation =SeguroUnimedResponse.class))}),
 	})
+
 	@GetMapping("/filter")
 	public SeguroUnimedResponse<List<CustomerDTO>> findAllByFilters(
 			@Parameter(description = "email para consulta") @RequestParam(required = false) String email,
@@ -92,6 +91,16 @@ public class CustomerController {
 	public CustomerDTO create(@Valid @RequestBody CustomerDTO request) {
 		Customer createdItem = service.create(MapperUtils.map(request, Customer.class));
 		return MapperUtils.map(createdItem, CustomerDTO.class);
+	}
+
+	@Operation(
+			summary = "delete Customer REST API",
+			description = "delete Customer REST API is used to delete customer in a database"
+	)
+	@DeleteMapping(value = "/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void delete(@PathVariable Long id) throws CustomerNotFoundException {
+		this.service.delete(id);
 	}
 
 }
