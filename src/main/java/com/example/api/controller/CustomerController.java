@@ -16,15 +16,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/customers")
+@Validated
 @Tag(name = "CUSTOMER", description = "Endpoint especifico para operações do customer")
 public class CustomerController {
 
@@ -47,8 +49,7 @@ public class CustomerController {
 			@ApiResponse(responseCode = "400", description = "id inválido", content = @Content),
 			@ApiResponse(responseCode = "404", description = "customer não encontrado", content = @Content) })
 	@GetMapping("/{id}")
-	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<SeguroUnimedResponse<CustomerDTO>> findById(@Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) throws CustomerNotFoundException {
+	public SeguroUnimedResponse<CustomerDTO> findById(@Valid @Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) throws CustomerNotFoundException {
 
 		SeguroUnimedResponse<CustomerDTO> response = new SeguroUnimedResponse<>();
 		Customer customer = service.findById(id);
@@ -56,7 +57,7 @@ public class CustomerController {
 		CustomerDTO dto = MapperUtils.map(customer, CustomerDTO.class);
 		response.setData(dto);
 
-		return ResponseEntity.ok().body(response);
+		return response;
 	}
 
 	@Operation(summary = "Rota para buscar todos os customers filtrados por email")
@@ -65,7 +66,7 @@ public class CustomerController {
 					@Content(mediaType = "application/json", schema = @Schema(implementation =SeguroUnimedResponse.class))}),
 	})
 	@GetMapping("/filter")
-	public ResponseEntity<SeguroUnimedResponse<List<CustomerDTO>>> findAllByFilters(
+	public SeguroUnimedResponse<List<CustomerDTO>> findAllByFilters(
 			@Parameter(description = "email para consulta") @RequestParam(required = false) String email,
 			@Parameter(description = "Nome para consulta") @RequestParam(required = false) String name
 	) {
@@ -74,7 +75,22 @@ public class CustomerController {
 
 		response.setData(MapperUtils.mapAll(result, CustomerDTO.class));
 
-		return ResponseEntity.ok().body(response);
+		return response;
+	}
+
+	@Operation(
+			summary = "Create Customer REST API",
+			description = "Create Customer REST API is used to save customer in a database"
+	)
+	@ApiResponse(
+			responseCode = "201",
+			description = "HTTP Status 201 CREATED"
+	)
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	public CustomerDTO create(@Valid @RequestBody CustomerDTO request) {
+		Customer createdItem = service.create(MapperUtils.map(request, Customer.class));
+		return MapperUtils.map(createdItem, CustomerDTO.class);
 	}
 
 }
