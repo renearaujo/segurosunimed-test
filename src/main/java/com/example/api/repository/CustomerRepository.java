@@ -1,14 +1,15 @@
 package com.example.api.repository;
 
 import com.example.api.domain.Customer;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface CustomerRepository extends CrudRepository<Customer, Long> {
+public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
 	List<Customer> findAllByOrderByNameAsc();
 
@@ -21,4 +22,7 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
 			@Param("email") @Nullable String email,
 			@Param("name") @Nullable String name
 	);
+
+	Optional<Customer> findByEmailIgnoreCase(String email);
+
 }
