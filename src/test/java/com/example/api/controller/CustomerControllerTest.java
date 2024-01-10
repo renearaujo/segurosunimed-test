@@ -1,6 +1,8 @@
 package com.example.api.controller;
 
 import com.example.api.dto.CustomerDTO;
+import com.example.api.exception.CustomerNotFoundException;
+import com.example.api.exception.EmailAlreadyExistsException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,10 +16,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -141,9 +143,18 @@ class CustomerControllerTest {
 
         CustomerDTO responseDTO = objectMapper.readValue(responseJson, CustomerDTO.class);
 
-        mockMvc.perform(setupPost(customer)).andDo(print()).andExpect(status().isConflict())
+        mockMvc.perform(setupPost(customer)).andExpect(status().isConflict())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].details")
-                        .value("Email [" + customer.getEmail() + "] Already Exists for another Customer with id = [" + responseDTO.getId() + "]"));
+                        .value(MessageFormat.format(EmailAlreadyExistsException.MSG_TEMPLATE, customer.getEmail(), responseDTO.getId())));
+    }
+
+    private CustomerDTO createAndGetResponse() throws Exception {
+        CustomerDTO customer = createCustomer(1).get(0);
+
+        String responseJson = mockMvc.perform(setupPost(customer)).andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        return objectMapper.readValue(responseJson, CustomerDTO.class);
     }
 
     private MockHttpServletRequestBuilder setupPost(CustomerDTO requestBody) throws JsonProcessingException {
@@ -175,6 +186,36 @@ class CustomerControllerTest {
                         .content(objectMapper.writeValueAsString(customer)))
                 .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].details").value("Invalid Name: Must be of 3 - 100 characters"));
+    }
+
+    @Test
+    void testDelete_shouldThrowExceptionWhenCustomerNotFound() throws Exception {
+        Long id = 2222222L;
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete(URL + "/{id}", id)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].details").value(MessageFormat.format(CustomerNotFoundException.MSG_TEMPLATE, id)));
+    }
+
+    @Test
+    void testDelete_shouldDelete() throws Exception {
+
+        CustomerDTO customerDTO = this.createAndGetResponse();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete(URL + "/{id}", customerDTO.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(URL + "/{id}", customerDTO.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0].details").value(MessageFormat.format(CustomerNotFoundException.MSG_TEMPLATE, customerDTO.getId())));
+
+
     }
 
 }
