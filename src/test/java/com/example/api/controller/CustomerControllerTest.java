@@ -23,7 +23,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -112,8 +111,8 @@ class CustomerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders
                         .get(URL + "/filters")
                         .param("email", customer.get(1).getName())
-                        .param("name", anyString())
-                        .param("gender", anyString())
+                        .param("name", "test")
+                        .param("gender", "m")
                         .param("page", "0")
                         .param("size", "10")
                         .param("sortBy", "name")
