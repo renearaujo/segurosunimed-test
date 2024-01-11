@@ -49,4 +49,16 @@ public class EmailAlreadyExistsException extends RuntimeException {
     public String getLocalizedMessage() {
         return MessageFormat.format(MSG_TEMPLATE, email, id);
     }
+
+    /**
+     * Override get message to return a custom message
+     *
+     * @return the {@link #getLocalizedMessage()}
+     * @author René Araújo Vasconcelos - 1/11/2024 - 3:17 PM
+     * @see #getLocalizedMessage()
+     */
+    @Override
+    public String getMessage() {
+        return this.getLocalizedMessage();
+    }
 }
