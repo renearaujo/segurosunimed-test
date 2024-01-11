@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -101,36 +102,60 @@ class CustomerControllerTest {
     }
 
     @Test
-    void testFindByFilterShouldOK() throws Exception
-    {
-        mockMvc.perform( MockMvcRequestBuilders
-                        .get(URL+"/filter")
-                        .param("email", ".com")
-                        .param("name", "joao")
-                        .param("gender", "M")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
+    void testFindAllByFilters() throws Exception {
 
-    @Test
-    void testFindByFilterShouldOKWithoutParams() throws Exception
-    {
-        mockMvc.perform( MockMvcRequestBuilders
-                        .get(URL+"/filter")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        int totalElements = 10;
+
+        List<CustomerDTO> customer = createCustomer(totalElements);
+        createCustomer(customer);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(URL + "/filters")
+                        .param("email", customer.get(1).getName())
+                        .param("name", anyString())
+                        .param("gender", anyString())
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "name")
+                        .param("sortOrder", "ASC")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElementsThisPage").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pageNumber").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pageIndex").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isFirst").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isLast").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hasNext").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hasPrevious").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray());
     }
 
     @Test
     void testFindByFilterShouldOKWithBlankParam() throws Exception
     {
-        mockMvc.perform( MockMvcRequestBuilders
-                        .get(URL+"/filter")
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(URL + "/filters")
                         .param("email", "")
-                        .param("name", "")
+                        .param("name", "any()")
                         .param("gender", "")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "name")
+                        .param("sortOrder", "ASC")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElementsThisPage").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pageNumber").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pageIndex").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isFirst").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.isLast").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hasNext").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.hasPrevious").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray());
     }
 
     @Test
@@ -270,7 +295,7 @@ class CustomerControllerTest {
     @Test
     void testUpdateCustomerNotFound() throws Exception {
 
-        String newName = RandomStringUtils.randomAlphabetic(1, 33);
+        String newName = RandomStringUtils.randomAlphabetic(4, 33);
         CustomerDTO customer = createAndGetResponse().withName(newName);
 
         Long customerId = 11111L;
