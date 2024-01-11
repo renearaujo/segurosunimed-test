@@ -25,7 +25,7 @@ import java.util.Objects;
 @Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler<T> {
-	
+
 	/**
 	 * Method that handles a {@link CustomerNotFoundException}
 	 * 
@@ -119,6 +119,14 @@ public class ApiExceptionHandler<T> {
 				.map(violation -> violation.getRootBeanClass().getName() + " " + violation.getPropertyPath() + ": " + violation.getMessage())
 				.toArray(String[]::new);
 		return this.getResponse(errors);
+	}
+
+
+	@ExceptionHandler(Exception.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public SeguroUnimedResponse<T> handleGenericException(Exception exception) {
+		log.error("Unhandled exception occurred", exception);
+		return this.getResponse("An unexpected error occurred");
 	}
 
 }

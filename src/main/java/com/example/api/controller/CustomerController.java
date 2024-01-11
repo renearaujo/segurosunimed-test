@@ -5,7 +5,6 @@ import com.example.api.dto.CustomerDTO;
 import com.example.api.dto.response.SeguroUnimedResponse;
 import com.example.api.exception.CustomerNotFoundException;
 import com.example.api.service.CustomerService;
-import com.example.api.util.MapperUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/customers")
 @Tag(name = "CUSTOMER", description = "Endpoint especifico para operações do customer")
+@Validated
 public class CustomerController {
 
 	private final CustomerService service;
@@ -47,15 +48,8 @@ public class CustomerController {
 			@ApiResponse(responseCode = "400", description = "id inválido", content = @Content),
 			@ApiResponse(responseCode = "404", description = "customer não encontrado", content = @Content) })
 	@GetMapping("/{id}")
-	public SeguroUnimedResponse<CustomerDTO> findById(@Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) throws CustomerNotFoundException {
-
-		SeguroUnimedResponse<CustomerDTO> response = new SeguroUnimedResponse<>();
-		Customer customer = service.findById(id);
-
-		CustomerDTO dto = MapperUtils.map(customer, CustomerDTO.class);
-		response.setData(dto);
-
-		return response;
+	public CustomerDTO findById(@Parameter(description = "id para buscar um customer especifico") @PathVariable Long id) throws CustomerNotFoundException {
+		return service.findById(id);
 	}
 
 	@Operation(summary = "Rota para buscar todos os customers filtrados por email")
@@ -65,17 +59,12 @@ public class CustomerController {
 	})
 
 	@GetMapping("/filter")
-	public SeguroUnimedResponse<List<CustomerDTO>> findAllByFilters(
+	public List<CustomerDTO> findAllByFilters(
 			@Parameter(description = "email para consulta") @RequestParam(required = false) String email,
 			@Parameter(description = "Nome para consulta") @RequestParam(required = false) String name,
 			@Parameter(description = "Genero para consulta") @RequestParam(required = false) String gender
 	) {
-		SeguroUnimedResponse<List<CustomerDTO>> response = new SeguroUnimedResponse<>();
-		List<Customer> result = service.findAllByFilters(email, name, gender);
-
-		response.setData(MapperUtils.mapAll(result, CustomerDTO.class));
-
-		return response;
+		return service.findAllByFilters(email, name, gender);
 	}
 
 	@Operation(
@@ -89,8 +78,7 @@ public class CustomerController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public CustomerDTO create(@Valid @RequestBody CustomerDTO request) {
-		Customer createdItem = service.create(MapperUtils.map(request, Customer.class));
-		return MapperUtils.map(createdItem, CustomerDTO.class);
+		return service.create(request);
 	}
 
 	@Operation(
@@ -101,6 +89,11 @@ public class CustomerController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable Long id) throws CustomerNotFoundException {
 		this.service.delete(id);
+	}
+
+	@PutMapping(value = "/{id}")
+	public CustomerDTO update(@Valid @RequestBody CustomerDTO request, @PathVariable Long id) {
+		return this.service.update(id, request);
 	}
 
 }

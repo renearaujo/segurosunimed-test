@@ -1,13 +1,18 @@
 package com.example.api.util;
 
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public class MapperUtils {
+
+    private final ModelMapper modelMapper;
 
     /**
      * Converts the  source to the target class using {@link ModelMapper}
@@ -20,7 +25,7 @@ public class MapperUtils {
      * @param <T> target type
      */
     public <S, T> T map(S source, Class<T> targetClass) {
-        return new ModelMapper().map(source, targetClass);
+        return modelMapper.map(source, targetClass);
     }
 
     /**
@@ -39,4 +44,10 @@ public class MapperUtils {
                 .map(element -> map(element, targetClass))
                 .collect(Collectors.toList());
     }
+
+    public <T> void merge(T source, T target) {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        modelMapper.map(source, target);
+    }
+
 }
