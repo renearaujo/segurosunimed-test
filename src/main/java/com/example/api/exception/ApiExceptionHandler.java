@@ -34,11 +34,24 @@ public class ApiExceptionHandler<T> {
 	 * @param exception customer not found exception
 	 * @return the {@link ResponseEntity} with {@link HttpStatus#NOT_FOUND} status code
 	 */
-	@ExceptionHandler(value = { CustomerNotFoundException.class })
+	@ExceptionHandler(value = {CustomerNotFoundException.class})
 	@ResponseStatus(value = HttpStatus.NOT_FOUND)
 	protected SeguroUnimedResponse<T> handleCustomerNotFoundException(CustomerNotFoundException exception) {
 		return this.getResponse(exception.getLocalizedMessage());
     }
+
+	/**
+	 * Method that handles a {@link CepNotFoundException}
+	 *
+	 * @param exception customer not found exception
+	 * @return the {@link ResponseEntity} with {@link HttpStatus#NOT_FOUND} status code
+	 * @author René Araújo Vasconcelos - 1/11/2024 - 5:15 PM
+	 */
+	@ExceptionHandler(value = CepNotFoundException.class)
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	protected SeguroUnimedResponse<T> handleCepNotFoundException(CepNotFoundException exception) {
+		return this.getResponse(exception.getLocalizedMessage());
+	}
 
 	/**
 	 * Method that handles a {@link ServerErrorException}.
@@ -127,6 +140,19 @@ public class ApiExceptionHandler<T> {
 	public SeguroUnimedResponse<T> handleGenericException(Exception exception) {
 		log.error("Unhandled exception occurred", exception);
 		return this.getResponse("An unexpected error occurred");
+	}
+
+	/**
+	 * Method that handles a {@link MalformedCepException}.
+	 *
+	 * @param exception the exception to be handled
+	 * @return the {@link ResponseEntity} with {@link HttpStatus#BAD_REQUEST} status code
+	 * @author René Araújo Vasconcelos - 1/11/2024 - 5:22 PM
+	 */
+	@ExceptionHandler(value = {MalformedCepException.class})
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	protected SeguroUnimedResponse<T> handleMalformedCepException(MalformedCepException exception) {
+		return this.getResponse(exception.getLocalizedMessage());
 	}
 
 }
