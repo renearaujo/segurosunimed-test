@@ -3,6 +3,7 @@ package com.example.api.controller;
 import com.example.api.domain.Customer;
 import com.example.api.dto.CustomerDTO;
 import com.example.api.dto.response.SeguroUnimedResponse;
+import com.example.api.dto.response.UnimedPagedResponse;
 import com.example.api.exception.CustomerNotFoundException;
 import com.example.api.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -57,16 +61,19 @@ public class CustomerController {
 			@ApiResponse(responseCode = "200", description = "lista de customers", content = {
 					@Content(mediaType = "application/json", schema = @Schema(implementation =SeguroUnimedResponse.class))}),
 	})
-
-	@GetMapping("/filter")
-	public List<CustomerDTO> findAllByFilters(
+	@GetMapping("/filters")
+	public UnimedPagedResponse<CustomerDTO> findAllByFilters(
 			@Parameter(description = "email para consulta") @RequestParam(required = false) String email,
 			@Parameter(description = "Nome para consulta") @RequestParam(required = false) String name,
-			@Parameter(description = "Genero para consulta") @RequestParam(required = false) String gender
+			@Parameter(description = "Genero para consulta") @RequestParam(required = false) String gender,
+			@Parameter(description = "Número da página (começando em 0)", example = "0") @RequestParam(defaultValue = "0") int page,
+			@Parameter(description = "Tamanho da página", example = "10") @RequestParam(defaultValue = "10") int size,
+			@Parameter(description = "Atributo para ordenação. Exemplo: name") @RequestParam(required = false, defaultValue = "name") String sortBy,
+			@Parameter(description = "Ordem de ordenação. Exemplo: asc ou desc") @RequestParam(defaultValue = "ASC") Sort.Direction sortOrder
 	) {
-		return service.findAllByFilters(email, name, gender);
+		Pageable pageable = PageRequest.of(page, size, Sort.by(sortOrder, sortBy));
+		return service.findAllByFilters(email, name, gender, pageable);
 	}
-
 	@Operation(
 			summary = "Create Customer REST API",
 			description = "Create Customer REST API is used to save customer in a database"

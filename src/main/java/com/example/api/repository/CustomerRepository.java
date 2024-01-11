@@ -1,6 +1,9 @@
 package com.example.api.repository;
 
 import com.example.api.domain.Customer;
+import com.example.api.dto.CustomerDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,18 +17,18 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	List<Customer> findAllByOrderByNameAsc();
 
 	@Query(
-			"SELECT c FROM Customer c WHERE " +
+			"SELECT new com.example.api.dto.CustomerDTO(c.id, c.name, c.email, c.gender) FROM Customer c WHERE " +
 			"(:email IS NULL OR TRIM(UPPER(c.email)) LIKE UPPER(CONCAT('%', TRIM(:email), '%'))) " +
 			"AND " +
 			"(:name IS NULL OR TRIM(UPPER(c.name)) LIKE UPPER(CONCAT('%', TRIM(:name), '%'))) " +
 			"AND " +
 			"(:gender IS NULL OR TRIM(UPPER(c.gender)) LIKE UPPER(CONCAT('%', TRIM(:gender), '%')))"
 	)
-	List<Customer> findAllByFilters(
+	Page<CustomerDTO> findAllByFilters(
 			@Param("email") @Nullable String email,
 			@Param("name") @Nullable String name,
-			@Param("gender") @Nullable String gender
-	);
+			@Param("gender") @Nullable String gender,
+			Pageable pageable);
 
 	Optional<Customer> findByEmailIgnoreCase(String email);
 

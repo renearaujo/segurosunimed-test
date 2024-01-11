@@ -46,7 +46,7 @@ class CustomerServiceTest {
 
         when(repository.findByEmailIgnoreCase(dto.getEmail())).thenReturn(Optional.empty());
         when(mapperUtils.map(dto, Customer.class)).thenReturn(entity);
-        when(repository.save(any())).thenReturn(entity);
+        when(repository.save(any(Customer.class))).thenReturn(entity);
         when(mapperUtils.map(entity, CustomerDTO.class)).thenReturn(dto);
         when(validator.supports(CustomerDTO.class)).thenReturn(true);
 
@@ -69,7 +69,7 @@ class CustomerServiceTest {
     }
 
     private CustomerDTO createTestCustomerDTO() {
-        return CustomerDTO.builder().email("test@gmail.com").name("test").gender("M").build();
+        return CustomerDTO.builder().email("testddddd@gmail.com").name("test").gender("M").build();
     }
 
     private Customer createTestCustomerEntity() {

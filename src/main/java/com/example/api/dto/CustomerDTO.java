@@ -1,12 +1,13 @@
 package com.example.api.dto;
 
-import com.example.api.validation.OnCreate;
-import com.example.api.validation.OnUpdate;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.*;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * DTO that used for a Customer
@@ -37,7 +38,12 @@ public class CustomerDTO {
     @NotNull(message = "Invalid Name: gender is NULL")
     private String gender;
 
-    @Null(groups = OnCreate.class)
-    @NotNull(groups = OnUpdate.class)
     private Long id;
+
+    public CustomerDTO(Long id, String name, String email, String gender) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.gender = gender;
+    }
 }

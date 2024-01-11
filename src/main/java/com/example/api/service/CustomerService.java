@@ -2,14 +2,15 @@ package com.example.api.service;
 
 import com.example.api.domain.Customer;
 import com.example.api.dto.CustomerDTO;
+import com.example.api.dto.response.UnimedPagedResponse;
 import com.example.api.exception.CustomerNotFoundException;
 import com.example.api.exception.EmailAlreadyExistsException;
 import com.example.api.repository.CustomerRepository;
 import com.example.api.util.MapperUtils;
-import com.example.api.validation.OnCreate;
-import com.example.api.validation.OnUpdate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -51,12 +52,26 @@ public class CustomerService {
      * @return a {@link List} of {@link Customer}s
      * @author René Araújo Vasconcelos - 1/8/2024 - 7:55 PM
      */
-    public List<CustomerDTO> findAllByFilters(String email, String name, String gender) {
-        return mapperUtils.mapAll(repository.findAllByFilters(email, name, gender), CustomerDTO.class);
+    public UnimedPagedResponse<CustomerDTO> findAllByFilters(String email, String name, String gender, Pageable pageable) {
+
+        Page<CustomerDTO> result = repository.findAllByFilters(email, name, gender, pageable);
+
+        return new UnimedPagedResponse<>(
+                result.getTotalElements(),
+                result.getSize(),
+                result.getNumber() + 1, // for user page number starts from 1
+                result.getNumber(),
+                result.getTotalPages(),
+                result.isFirst(),
+                result.isLast(),
+                result.hasNext(),
+                result.hasPrevious(),
+                result.getContent()
+        );
+
     }
 
     @Transactional
-    @Validated(OnCreate.class)
     public CustomerDTO create(@Valid CustomerDTO item) {
 
         repository.findByEmailIgnoreCase(item.getEmail())
@@ -64,6 +79,7 @@ public class CustomerService {
                     throw new EmailAlreadyExistsException(item.getEmail(), i.getId());
                 });
 
+        item.setId(null);
         Customer saved = this.repository.save(mapperUtils.map(item, Customer.class));
 
         log.info("Customer created with id = [{}],  email = [{}] ", saved.getId(), saved.getEmail());
@@ -79,7 +95,6 @@ public class CustomerService {
     }
 
     @Transactional
-    @Validated(OnUpdate.class)
     public CustomerDTO update(Long id, CustomerDTO dto) {
 
         Customer existingCustomer = repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
