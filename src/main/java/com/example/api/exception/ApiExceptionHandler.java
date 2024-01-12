@@ -27,35 +27,8 @@ import java.util.Objects;
 public class ApiExceptionHandler<T> {
 
 	/**
-	 * Method that handles a {@link CustomerNotFoundException}
-	 * 
-	 * @author René Araújo Vasconcelos - 1/8/2024 - 2:11 PM
-	 *
-	 * @param exception customer not found exception
-	 * @return the {@link ResponseEntity} with {@link HttpStatus#NOT_FOUND} status code
-	 */
-	@ExceptionHandler(value = {CustomerNotFoundException.class})
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
-	protected SeguroUnimedResponse<T> handleCustomerNotFoundException(CustomerNotFoundException exception) {
-		return this.getResponse(exception.getLocalizedMessage());
-    }
-
-	/**
-	 * Method that handles a {@link CepNotFoundException}
-	 *
-	 * @param exception customer not found exception
-	 * @return the {@link ResponseEntity} with {@link HttpStatus#NOT_FOUND} status code
-	 * @author René Araújo Vasconcelos - 1/11/2024 - 5:15 PM
-	 */
-	@ExceptionHandler(value = CepNotFoundException.class)
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
-	protected SeguroUnimedResponse<T> handleCepNotFoundException(CepNotFoundException exception) {
-		return this.getResponse(exception.getLocalizedMessage());
-	}
-
-	/**
 	 * Method that handles a {@link ServerErrorException}.
-	 * 
+	 *
 	 * @author René Araújo Vasconcelos - 1/8/2024 - 2:14 PM
 	 *
 	 * @param exception the exception to be handled
@@ -83,18 +56,6 @@ public class ApiExceptionHandler<T> {
 		return this.getResponse(exception.getLocalizedMessage());
 	}
 
-	/**
-	 * Method that handles a {@link EmailAlreadyExistsException}
-	 *
-	 * @param exception email already exists exception
-	 * @return the {@link ResponseEntity} with {@link HttpStatus#CONFLICT} status code
-	 * @author René Araújo Vasconcelos - 1/9/2024 - 12:59 AM
-	 */
-	@ExceptionHandler(value = {EmailAlreadyExistsException.class})
-	@ResponseStatus(value = HttpStatus.CONFLICT)
-	protected SeguroUnimedResponse<T> handleEmailAlreadyExistsException(EmailAlreadyExistsException exception) {
-		return this.getResponse(exception.getLocalizedMessage());
-	}
 
 	/**
 	 * Creates a default response with the exception message
@@ -134,7 +95,6 @@ public class ApiExceptionHandler<T> {
 		return this.getResponse(errors);
 	}
 
-
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public SeguroUnimedResponse<T> handleGenericException(Exception exception) {
@@ -152,6 +112,36 @@ public class ApiExceptionHandler<T> {
 	@ExceptionHandler(value = {MalformedCepException.class})
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	protected SeguroUnimedResponse<T> handleMalformedCepException(MalformedCepException exception) {
+		return this.getResponse(exception.getLocalizedMessage());
+	}
+
+	/**
+	 * Method that handles {@link UnimedAlreadyExistsException}
+	 *
+	 * @param exception already exists exception
+	 * @return the {@link ResponseEntity} with {@link HttpStatus#CONFLICT} status code
+	 * @author René Araújo Vasconcelos - 1/11/2024 - 11:34 PM
+	 * @see EmailAlreadyExistsException
+	 * @see CustomerAddressAlreadyExistsException
+	 */
+	@ExceptionHandler(value = {EmailAlreadyExistsException.class, CustomerAddressAlreadyExistsException.class})
+	@ResponseStatus(value = HttpStatus.CONFLICT)
+	protected SeguroUnimedResponse<T> handleAlreadyExistsException(UnimedAlreadyExistsException exception) {
+		return this.getResponse(exception.getLocalizedMessage());
+	}
+
+	/**
+	 * Method that handles a {@link UnimedNotFoundException}
+	 *
+	 * @param exception customer not found exception
+	 * @return the {@link ResponseEntity} with {@link HttpStatus#NOT_FOUND} status code
+	 * @author René Araújo Vasconcelos - 1/11/2024 - 11:41 PM
+	 * @see CustomerNotFoundException
+	 * @see CepNotFoundException
+	 */
+	@ExceptionHandler(value = {CustomerNotFoundException.class, CepNotFoundException.class})
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	protected SeguroUnimedResponse<T> handleCustomerNotFoundException(UnimedNotFoundException exception) {
 		return this.getResponse(exception.getLocalizedMessage());
 	}
 
