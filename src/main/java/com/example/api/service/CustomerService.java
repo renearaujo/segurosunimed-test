@@ -2,6 +2,8 @@ package com.example.api.service;
 
 import com.example.api.domain.Customer;
 import com.example.api.dto.CustomerDTO;
+import com.example.api.dto.request.CustomerSearchRequestDTO;
+import com.example.api.dto.response.CustomerSearchResponseDTO;
 import com.example.api.dto.response.UnimedPagedResponse;
 import com.example.api.exception.CustomerNotFoundException;
 import com.example.api.exception.EmailAlreadyExistsException;
@@ -10,7 +12,6 @@ import com.example.api.util.MapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Validated
+@Transactional(readOnly = true)
 public class CustomerService {
 
     private final CustomerRepository repository;
@@ -40,7 +42,11 @@ public class CustomerService {
      * @author René Araújo Vasconcelos - 1/8/2024 - 2:34 PM
      */
     public CustomerDTO findById(Long id) throws CustomerNotFoundException {
-        return mapperUtils.map(repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id)), CustomerDTO.class);
+        return mapperUtils.map(this.getById(id), CustomerDTO.class);
+    }
+
+    public Customer getById(Long id) throws CustomerNotFoundException {
+        return repository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
     /**
@@ -52,9 +58,9 @@ public class CustomerService {
      * @return a {@link List} of {@link Customer}s
      * @author René Araújo Vasconcelos - 1/8/2024 - 7:55 PM
      */
-    public UnimedPagedResponse<CustomerDTO> findAllByFilters(String email, String name, String gender, Pageable pageable) {
+    public UnimedPagedResponse<CustomerSearchResponseDTO> findAllByFilters(CustomerSearchRequestDTO dto) {
 
-        Page<CustomerDTO> result = repository.findAllByFilters(email, name, gender, pageable);
+        Page<CustomerSearchResponseDTO> result = repository.findAllByFilters(dto.getEmail(), dto.getName(), dto.getGender(), dto.getState(), dto.getCity(), dto.getPageable());
 
         return new UnimedPagedResponse<>(
                 result.getTotalElements(),

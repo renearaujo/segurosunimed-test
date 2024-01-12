@@ -3,43 +3,43 @@ package com.example.api.exception;
 import java.text.MessageFormat;
 
 /**
- * Exception that representing when a customer was not found
- * 
- * @author René Araújo Vasconcelos - 1/8/2024 - 11:13 AM
+ * Indicates that a cep was not found on the ViaCep api
+ *
+ * @author René Araújo Vasconcelos - 1/11/2024 - 3:19 PM
  */
-public class CustomerNotFoundException extends UnimedNotFoundException {
+public class CepNotFoundException extends UnimedNotFoundException {
 
     /**
      * Message template format for the exception
      */
-    public static final String MSG_TEMPLATE = "Customer with id = [{0}] not found";
+    public static final String MSG_TEMPLATE = "The CEP [{0}] was Not Found on ViaCep Api.";
 
     /**
-     * id from the customer
+     * cep not found
      */
-    private final Long id;
+    private final String cep;
 
     /**
      * default constructor
      *
-     * @param id id from the customer
-     * @author René Araújo Vasconcelos - 1/9/2024 - 11:43 PM
+     * @param cep cep not found
+     * @author René Araújo Vasconcelos - 1/11/2024 - 3:15 PM
      */
-    public CustomerNotFoundException(Long id) {
+    public CepNotFoundException(String cep) {
         super();
-        this.id = id;
+        this.cep = cep;
     }
 
     /**
      * Override method to create a custom message
      *
      * @return the message formatted
-     * @author René Araújo Vasconcelos - 1/9/2024 - 11:43 PM
+     * @author René Araújo Vasconcelos - 1/11/2024 - 3:15 PM
      * @see #MSG_TEMPLATE
      */
     @Override
     public String getLocalizedMessage() {
-        return MessageFormat.format(MSG_TEMPLATE, id);
+        return MessageFormat.format(MSG_TEMPLATE, cep);
     }
 
     /**

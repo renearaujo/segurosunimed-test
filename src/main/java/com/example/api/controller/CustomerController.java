@@ -1,10 +1,14 @@
 package com.example.api.controller;
 
 import com.example.api.domain.Customer;
+import com.example.api.domain.CustomerAddress;
 import com.example.api.dto.CustomerDTO;
-import com.example.api.dto.response.SeguroUnimedResponse;
+import com.example.api.dto.request.CreateCustomerAddressRequestDTO;
+import com.example.api.dto.request.CustomerSearchRequestDTO;
+import com.example.api.dto.response.CustomerSearchResponseDTO;
 import com.example.api.dto.response.UnimedPagedResponse;
 import com.example.api.exception.CustomerNotFoundException;
+import com.example.api.service.AddressService;
 import com.example.api.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,9 +20,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +38,7 @@ import java.util.List;
 public class CustomerController {
 
 	private final CustomerService service;
+	private final AddressService addressService;
 
 	@Operation(summary = "Rota para buscar todos os customers")
 	@ApiResponses(value = {
@@ -56,23 +61,27 @@ public class CustomerController {
 		return service.findById(id);
 	}
 
-	@Operation(summary = "Rota para buscar todos os customers filtrados por email")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "lista de customers", content = {
-					@Content(mediaType = "application/json", schema = @Schema(implementation =SeguroUnimedResponse.class))}),
-	})
 	@GetMapping("/filters")
-	public UnimedPagedResponse<CustomerDTO> findAllByFilters(
+	public ResponseEntity<UnimedPagedResponse<CustomerSearchResponseDTO>> findAllByFilters(
 			@Parameter(description = "email para consulta") @RequestParam(required = false) String email,
 			@Parameter(description = "Nome para consulta") @RequestParam(required = false) String name,
 			@Parameter(description = "Genero para consulta") @RequestParam(required = false) String gender,
+			@Parameter(description = "Estado do cliente para consulta") @RequestParam(required = false) String state,
+			@Parameter(description = "cidade do cliente para consulta") @RequestParam(required = false) String city,
 			@Parameter(description = "Número da página (começando em 0)", example = "0") @RequestParam(defaultValue = "0") int page,
 			@Parameter(description = "Tamanho da página", example = "10") @RequestParam(defaultValue = "10") int size,
 			@Parameter(description = "Atributo para ordenação. Exemplo: name") @RequestParam(required = false, defaultValue = "name") String sortBy,
 			@Parameter(description = "Ordem de ordenação. Exemplo: asc ou desc") @RequestParam(defaultValue = "ASC") Sort.Direction sortOrder
 	) {
-		Pageable pageable = PageRequest.of(page, size, Sort.by(sortOrder, sortBy));
-		return service.findAllByFilters(email, name, gender, pageable);
+		CustomerSearchRequestDTO requestDTO = CustomerSearchRequestDTO.builder()
+				.state(state)
+				.email(email)
+				.city(city)
+				.gender(gender)
+				.name(name)
+				.pageable(PageRequest.of(page, size, Sort.by(sortOrder, sortBy)))
+				.build();
+		return ResponseEntity.ok().body(this.service.findAllByFilters(requestDTO));
 	}
 	@Operation(
 			summary = "Create Customer REST API",
@@ -101,6 +110,12 @@ public class CustomerController {
 	@PutMapping(value = "/{id}")
 	public CustomerDTO update(@Valid @RequestBody CustomerDTO request, @PathVariable Long id) {
 		return this.service.update(id, request);
+	}
+
+	@PostMapping(value = "/{id}/addresses")
+	@ResponseStatus(HttpStatus.CREATED)
+	public CustomerAddress create(@Valid @RequestBody CreateCustomerAddressRequestDTO request, @PathVariable Long id) {
+		return this.addressService.create(request, id);
 	}
 
 }
