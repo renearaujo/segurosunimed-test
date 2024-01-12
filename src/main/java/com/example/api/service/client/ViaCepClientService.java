@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -45,6 +46,7 @@ public class ViaCepClientService {
 
     private final ObjectMapper objectMapper;
 
+    @Transactional
     public ViaCepApiResponse findByCep(@NotNull final String cep) throws IOException, InterruptedException {
         log.info("validating the cep [{}] informed", cep);
         validateCep(cep);

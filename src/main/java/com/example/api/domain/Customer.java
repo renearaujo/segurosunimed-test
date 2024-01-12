@@ -1,10 +1,13 @@
 package com.example.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,5 +33,9 @@ public class Customer {
 	@Column(nullable = false)
 	@NotEmpty
 	private String gender;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<CustomerAddress> addresses = new ArrayList<>();
 
 }
