@@ -1,8 +1,5 @@
 package com.example.api.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import java.text.MessageFormat;
 
 /**
@@ -10,8 +7,7 @@ import java.text.MessageFormat;
  *
  * @author René Araújo Vasconcelos - 1/11/2024 - 3:19 PM
  */
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class CepNotFoundException extends RuntimeException {
+public class CepNotFoundException extends UnimedNotFoundException {
 
     /**
      * Message template format for the exception
