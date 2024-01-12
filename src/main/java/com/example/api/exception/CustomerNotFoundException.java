@@ -7,7 +7,7 @@ import java.text.MessageFormat;
  * 
  * @author René Araújo Vasconcelos - 1/8/2024 - 11:13 AM
  */
-public class CustomerNotFoundException extends RuntimeException {
+public class CustomerNotFoundException extends UnimedNotFoundException {
 
     /**
      * Message template format for the exception
