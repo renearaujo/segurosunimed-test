@@ -8,7 +8,7 @@ import java.text.MessageFormat;
  *
  * @author René Araújo Vasconcelos - 1/9/2024 - 7:39 PM
  */
-public class EmailAlreadyExistsException extends RuntimeException {
+public class EmailAlreadyExistsException extends UnimedAlreadyExistsException {
 
     /**
      * Message template format for the exception
