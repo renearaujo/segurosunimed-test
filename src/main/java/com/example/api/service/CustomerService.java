@@ -29,8 +29,14 @@ public class CustomerService {
     private final CustomerRepository repository;
     private final MapperUtils mapperUtils;
 
-    public List<Customer> findAll() {
-        return repository.findAllByOrderByNameAsc();
+    /**
+     * Find all specific for search
+     *
+     * @author René Araújo Vasconcelos - 1/12/2024 - 11:34 AM
+     * @return response dto
+     */
+    public List<CustomerSearchResponseDTO> findAllCustom() {
+        return this.repository.findAllCustom();
     }
 
     /**
@@ -41,7 +47,7 @@ public class CustomerService {
      * @throws CustomerNotFoundException exception if a customer was not found
      * @author René Araújo Vasconcelos - 1/8/2024 - 2:34 PM
      */
-    public CustomerDTO findById(Long id) throws CustomerNotFoundException {
+    public CustomerDTO findById(Long id) {
         return mapperUtils.map(this.getById(id), CustomerDTO.class);
     }
 

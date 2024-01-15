@@ -7,10 +7,8 @@ import com.example.api.exception.EmailAlreadyExistsException;
 import com.example.api.repository.CustomerRepository;
 import com.example.api.util.MapperUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -20,9 +18,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 class CustomerServiceTest {
 

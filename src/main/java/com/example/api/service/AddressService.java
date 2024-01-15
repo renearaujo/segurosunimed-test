@@ -2,11 +2,11 @@ package com.example.api.service;
 
 import com.example.api.domain.Customer;
 import com.example.api.domain.CustomerAddress;
-import com.example.api.dto.ViaCepApiResponse;
+import com.example.api.dto.CepApiResponse;
 import com.example.api.dto.request.CreateCustomerAddressRequestDTO;
 import com.example.api.exception.CustomerAddressAlreadyExistsException;
 import com.example.api.repository.AddressRepository;
-import com.example.api.service.client.ViaCepClientService;
+import com.example.api.service.client.CepClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import javax.validation.Valid;
 public class AddressService {
 
     private final AddressRepository repository;
-    private final ViaCepClientService viaCepClientService;
+    private final CepClientService viaCepClientService;
     private final CustomerService customerService;
 
     @SneakyThrows
@@ -30,7 +30,7 @@ public class AddressService {
         // get customer and validate if exists
         Customer customer = this.customerService.getById(customerId);
         // get address and validate if cep exists
-        ViaCepApiResponse viaCepApiResponse = this.viaCepClientService.findByCep(dto.getCep());
+        CepApiResponse viaCepApiResponse = this.viaCepClientService.findByCep(dto.getCep());
         // validate address
         this.validateAddress(customer.getId(), dto);
         // setup new address with all the information
@@ -41,10 +41,10 @@ public class AddressService {
         return customerAddressDB;
     }
 
-    private CustomerAddress setupNewAddress(CreateCustomerAddressRequestDTO dto, Customer customer, ViaCepApiResponse viaCepApiResponse) {
+    private CustomerAddress setupNewAddress(CreateCustomerAddressRequestDTO dto, Customer customer, CepApiResponse viaCepApiResponse) {
         return CustomerAddress.builder()
                 .customer(customer)
-                .postalCode(dto.getCep())
+                .zipCode(dto.getCep())
                 .city(viaCepApiResponse.getLocalidade())
                 .state(viaCepApiResponse.getUf())
                 .complement(dto.getComplement())

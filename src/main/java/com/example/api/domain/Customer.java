@@ -15,8 +15,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "CUSTOMER")
+@Table(name = "CUSTOMER", indexes = {
+		@Index(name = Customer.INDEX, columnList = "email")
+})
 public class Customer {
+
+	public static final String INDEX = "idx_customer_email_unq";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +29,7 @@ public class Customer {
 	@Column(nullable = false)
 	private String name;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	@NotEmpty
 	@Email(message = "Email inválido")
 	private String email;

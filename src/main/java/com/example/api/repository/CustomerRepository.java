@@ -14,10 +14,11 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-	List<Customer> findAllByOrderByNameAsc();
+	@Query("SELECT new com.example.api.dto.response.CustomerSearchResponseDTO(c.id, c.name, c.email, c.gender) FROM Customer c order by c.name")
+	List<CustomerSearchResponseDTO> findAllCustom();
 
 	@Query(
-			"SELECT new com.example.api.dto.response.CustomerSearchResponseDTO(c.id, c.name, c.email, c.gender) FROM Customer c " +
+			"SELECT DISTINCT new com.example.api.dto.response.CustomerSearchResponseDTO(c.id, c.name, c.email, c.gender) FROM Customer c " +
 					"LEFT JOIN c.addresses a WHERE " +
 					"(:email IS NULL OR TRIM(UPPER(c.email)) LIKE UPPER(CONCAT('%', TRIM(:email), '%'))) " +
 					"AND " +

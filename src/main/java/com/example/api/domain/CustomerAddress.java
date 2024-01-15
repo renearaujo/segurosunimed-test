@@ -3,6 +3,7 @@ package com.example.api.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -17,8 +18,9 @@ import javax.validation.constraints.NotNull;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ADDRESS")
+@Table(name = "CUSTOMER_ADDRESS")
 public class CustomerAddress {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,25 +29,30 @@ public class CustomerAddress {
      * Street information from via cep API
      */
     @NotNull
+    @NotEmpty
+    @Column(length = 400)
     private String street;
 
     /**
      * City information from via cep API
      */
     @NotNull
+    @NotEmpty
     private String city;
 
     /**
      * State information from via cep API
      */
     @NotNull
+    @Column(length = 2)
     private String state;
 
     /**
      * Postal code information from via cep API
      */
     @NotNull
-    private String postalCode;
+    @Column(length = 8)
+    private String zipCode;
 
     /**
      * Neighbourhood information from via cep API
@@ -62,6 +69,7 @@ public class CustomerAddress {
     /**
      * Complement information from the address
      */
+    @Column(length = 400)
     private String complement;
 
     @ManyToOne
