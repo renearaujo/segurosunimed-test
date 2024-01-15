@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface AddressRepository extends JpaRepository<CustomerAddress, Long> {
 
     @Query("select c from CustomerAddress c " +
-            "where upper(c.postalCode) = upper(:postalCode) and upper(c.number) = upper(:number) and upper(c.complement) = upper(:complement) and c.customer.id = :customerId")
-    Optional<CustomerAddress> findAddressAlreadyExists(@Param("postalCode") String postalCode, @Param("number") String number, @Param("complement") String complement, @Param("customerId") Long customerId);
+            "where upper(c.zipCode) = upper(:zipCode) and upper(c.number) = upper(:number) and upper(c.complement) = upper(:complement) and c.customer.id = :customerId")
+    Optional<CustomerAddress> findAddressAlreadyExists(@Param("zipCode") String zipCode, @Param("number") String number, @Param("complement") String complement, @Param("customerId") Long customerId);
 
 }

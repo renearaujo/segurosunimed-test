@@ -1,17 +1,15 @@
 package com.example.api.service.client;
 
-import com.example.api.dto.ViaCepApiResponse;
+import com.example.api.dto.CepApiResponse;
 import com.example.api.exception.CepNotFoundException;
 import com.example.api.exception.MalformedCepException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -23,17 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-class ViaCepClientServiceTest {
+class CepClientServiceTest {
 
     @Mock
     private ObjectMapper objectMapper;
-    private ViaCepClientService service;
+    private CepClientService service;
 
     @BeforeEach
     void setUp() {
-        this.service = new ViaCepClientService(objectMapper);
+        this.service = new CepClientService(objectMapper);
     }
 
     @Test
@@ -59,8 +56,8 @@ class ViaCepClientServiceTest {
 
         Mockito.when(mockHttpClient.send(any(HttpRequest.class), any())).thenReturn(mockHttpResponse);
 
-        Mockito.when(objectMapper.readValue(responseBody, ViaCepApiResponse.class))
-                .thenReturn(ViaCepApiResponse.builder()
+        Mockito.when(objectMapper.readValue(responseBody, CepApiResponse.class))
+                .thenReturn(CepApiResponse.builder()
                         .cep("60160-080")
                         .logradouro("Rua Tomás Pompeu")
                         .complemento("")
@@ -74,7 +71,7 @@ class ViaCepClientServiceTest {
                         .build());
 
         // Act
-        ViaCepApiResponse result = service.findByCep(cep);
+        CepApiResponse result = service.findByCep(cep);
 
         // Assert
         assertEquals("60160-080", result.getCep());
@@ -122,8 +119,8 @@ class ViaCepClientServiceTest {
 
         Mockito.when(mockHttpClient.send(any(HttpRequest.class), any())).thenReturn(mockHttpResponse);
 
-        Mockito.when(objectMapper.readValue(responseBody, ViaCepApiResponse.class))
-                .thenReturn(ViaCepApiResponse.builder()
+        Mockito.when(objectMapper.readValue(responseBody, CepApiResponse.class))
+                .thenReturn(CepApiResponse.builder()
                         .erro(true)
                         .build());
 

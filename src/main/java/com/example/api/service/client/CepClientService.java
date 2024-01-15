@@ -1,6 +1,6 @@
 package com.example.api.service.client;
 
-import com.example.api.dto.ViaCepApiResponse;
+import com.example.api.dto.CepApiResponse;
 import com.example.api.exception.CepNotFoundException;
 import com.example.api.exception.MalformedCepException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +27,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ViaCepClientService {
+public class CepClientService {
 
     /**
      * Base URL to access via cep service
@@ -47,7 +47,7 @@ public class ViaCepClientService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public ViaCepApiResponse findByCep(@NotNull final String cep) throws IOException, InterruptedException {
+    public CepApiResponse findByCep(@NotNull final String cep) throws IOException, InterruptedException {
         log.info("validating the cep [{}] informed", cep);
         validateCep(cep);
         HttpClient httpClient = setupHttpClient();
@@ -55,7 +55,7 @@ public class ViaCepClientService {
         log.info("requesting via cep information for cep: [{}]", cep);
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         log.info("receiving via cep information for the cep [{}]: {}]", cep, httpResponse.body());
-        ViaCepApiResponse viaCepApiResponse = objectMapper.readValue(httpResponse.body(), ViaCepApiResponse.class);
+        CepApiResponse viaCepApiResponse = objectMapper.readValue(httpResponse.body(), CepApiResponse.class);
         validateViaCepResponse(cep, viaCepApiResponse);
 
         return viaCepApiResponse;
@@ -68,7 +68,7 @@ public class ViaCepClientService {
      * @param viaCepApiResponse response from the via cep api
      * @author René Araújo Vasconcelos - 1/11/2024 - 3:21 PM
      */
-    private static void validateViaCepResponse(String cep, ViaCepApiResponse viaCepApiResponse) {
+    private static void validateViaCepResponse(String cep, CepApiResponse viaCepApiResponse) {
         if (viaCepApiResponse.isErro()) {
             log.warn("Cep [{}] wasn't found on ViaCep API", cep);
             throw new CepNotFoundException(cep);
@@ -109,8 +109,8 @@ public class ViaCepClientService {
      * @param cep to be user to define uri
      * @return request with uri configured
      * @author René Araújo Vasconcelos - 1/11/2024 - 5:04 PM
-     * @see ViaCepClientService#BASE_URL
-     * @see ViaCepClientService#SUFFIX
+     * @see CepClientService#BASE_URL
+     * @see CepClientService#SUFFIX
      */
     private HttpRequest createViaCepRequest(final String cep) {
 

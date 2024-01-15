@@ -1,20 +1,19 @@
-package com.example.api.dto.response;
+package com.example.api.dto;
 
 import com.example.api.domain.CustomerAddress;
-import com.example.api.dto.CustomerDTO;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.io.Serializable;
 
 /**
  * DTO for {@link CustomerAddress}
  */
-@Getter
-@Setter
 @AllArgsConstructor
-@Builder
-@With
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomerAddressResponseDto {
+@Getter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AddressDTO implements Serializable {
     private final Long id;
     private final String street;
     private final String city;
@@ -23,5 +22,5 @@ public class CustomerAddressResponseDto {
     private final String neighbourhood;
     private final String number;
     private final String complement;
-    private final CustomerDTO customer;
+    private final Long customerId;
 }

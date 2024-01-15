@@ -1,6 +1,5 @@
 package com.example.api.controller;
 
-import com.example.api.domain.Customer;
 import com.example.api.domain.CustomerAddress;
 import com.example.api.dto.CustomerDTO;
 import com.example.api.dto.request.CreateCustomerAddressRequestDTO;
@@ -29,30 +28,35 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+/**
+ * Controller for Customer operations/Routes
+ *
+ * @author René Araújo Vasconcelos - 1/12/2024 - 10:43 AM
+ */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/customers")
-@Tag(name = "CUSTOMER", description = "Endpoint especifico para operações do customer")
+@Tag(name = "CUSTOMER", description = "Endpoint for u")
 @Validated
 public class CustomerController {
 
 	private final CustomerService service;
 	private final AddressService addressService;
 
-	@Operation(summary = "Rota para buscar todos os customers")
+	@Operation(summary = "Find all", description = "Find all the customers")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "lista de customers", content = {
-					@Content(mediaType = "application/json", schema = @Schema(implementation =Customer.class))}),
+			@ApiResponse(responseCode = "200", description = "List of all customers", content = {
+					@Content(mediaType = "application/json", schema = @Schema(implementation = CustomerSearchResponseDTO.class))}),
 			})
 	@GetMapping
-	public List<Customer> findAll() {
-		return service.findAll();
+	public ResponseEntity<List<CustomerSearchResponseDTO>> findAll() {
+		return ResponseEntity.ok().body(this.service.findAllCustom());
 	}
 
 	@Operation(summary = "Rota para buscar um customer por id")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "customer encontrado", content = {
+			@ApiResponse(responseCode = "200", description = "Customer Found", content = {
 					@Content(mediaType = "application/json", schema = @Schema(implementation = CustomerDTO.class))}),
 			@ApiResponse(responseCode = "400", description = "id inválido", content = @Content),
 			@ApiResponse(responseCode = "404", description = "customer não encontrado", content = @Content) })

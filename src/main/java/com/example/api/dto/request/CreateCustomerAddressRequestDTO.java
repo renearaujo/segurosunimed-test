@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import static com.example.api.service.client.ViaCepClientService.REGEX_ONLY_8_DIGITS;
+import static com.example.api.service.client.CepClientService.REGEX_ONLY_8_DIGITS;
 
 /**
  * Request DTO used for create a new customer address
